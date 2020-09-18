@@ -5,6 +5,8 @@
  */
 package anhnd.servlets;
 
+import anhnd.daos.AccountDAO;
+import anhnd.dtos.AccountDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
@@ -12,16 +14,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author anhnd
  */
-public class ProcessServlet extends HttpServlet {
+public class LoginServlet extends HttpServlet {
 
-    private static final String loginPage = "login.html";
-    private static final String LoginServlet = "LoginServlet";
-    private static final String RegisterServlet = "RegisterServlet";
+    private static final String MEMBER_PAGE = "member_home.jsp";
+     private static final String ADMIN_HOME = "admin_home.jsp";
+    private static final String LOGIN_PAGE = "login.html";
+    private static final String INVALID_PAGE = "invalid.html";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,19 +40,43 @@ public class ProcessServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+        String url = INVALID_PAGE;
+        String email = request.getParameter("txtEmail");
+        String password = request.getParameter("txtPassword");
         try {
-            String button = request.getParameter("btAction");
-            String url = loginPage;
-            if (button == null) {
-                //do nothing
-            } else if(button.equals("Login")){
-                url = LoginServlet;
-            }else if(button.equals("Register")){
-                url = RegisterServlet;
+            AccountDAO dao = new AccountDAO();
+            AccountDTO dto = dao.checkLogin(email, password);
+            System.out.println("email: " + dto.getEmail());
+            if (dto != null) {
+                if (dto.getStatus() != 2) {
+                    switch (dto.getRole()) {
+                        case 0: {
+                            HttpSession session = request.getSession();
+                            session.setAttribute("MEMBER", dto);
+                            url = MEMBER_PAGE;
+                            break;
+                        }
+                        
+                        case 1: {
+                            HttpSession session = request.getSession();
+                            session.setAttribute("ADMIN", dto);
+                            url = ADMIN_HOME;
+                            break;
+                        }
+                       
+                        default: {
+                            url = INVALID_PAGE;
+                            break;
+                        }
+                    }
+                }else {
+                    url = LOGIN_PAGE;
+                }
             }
-            RequestDispatcher dispatcher = request.getRequestDispatcher(url);
-            dispatcher.forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally{
+            response.sendRedirect(url);
             out.close();
         }
     }

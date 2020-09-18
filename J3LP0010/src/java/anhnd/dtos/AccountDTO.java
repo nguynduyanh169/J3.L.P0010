@@ -16,13 +16,12 @@ public class AccountDTO implements Serializable {
     private String email;
     private String name;
     private String password;
-    private String role;
-    private String status;
+    private int role;
+    private int status;
 
-    public AccountDTO(String email, String name, String password, String role, String status) {
+    public AccountDTO(String email, String name, int role, int status) {
         this.email = email;
         this.name = name;
-        this.password = password;
         this.role = role;
         this.status = status;
     }
@@ -51,21 +50,23 @@ public class AccountDTO implements Serializable {
         this.password = password;
     }
 
-    public String getRole() {
+    public int getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(int role) {
         this.role = role;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
+
+    
     
     
 }

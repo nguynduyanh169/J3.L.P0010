@@ -5,21 +5,19 @@
  */
 package anhnd.servlets;
 
-import anhnd.daos.AccountDAO;
-import anhnd.dtos.AccountDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author anhnd
  */
-public class RegisterServlet extends HttpServlet {
+public class LogoutServlet extends HttpServlet {
 
     private static final String LOGIN_PAGE = "login.html";
 
@@ -36,23 +34,16 @@ public class RegisterServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        String url = "";
-        String email = request.getParameter("txtEmail");
-        String name = request.getParameter("txtName");
-        String password = request.getParameter("txtPassword");
+        HttpSession session = request.getSession(false);
+        String url = LOGIN_PAGE;
+
         try {
-            AccountDTO dto = new AccountDTO(email, name, 0, 0);
-            dto.setPassword(password);
-            AccountDAO dao = new AccountDAO();
-            boolean flag = dao.insertAccount(dto);
-            if (flag == true) {
-                url = LOGIN_PAGE;
+            if (session != null) {
+                session.invalidate();
             }
-            RequestDispatcher dispatcher = request.getRequestDispatcher(url);
-            dispatcher.forward(request, response);
-        } catch (Exception e) {
-            e.printStackTrace();
+
         } finally {
+            response.sendRedirect(url);
             out.close();
         }
     }
