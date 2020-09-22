@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,7 +13,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>ADMIN!</h1>
+        <h1>Welcome <c:out value="${sessionScope.ACCOUNT.name}"/>!</h1>
         <form action="logout" method="POST">
             <input type="submit" value="Logout" name="btAction"/>
         </form>

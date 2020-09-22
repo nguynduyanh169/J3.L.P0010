@@ -7,6 +7,7 @@ package anhnd.servlets;
 
 import anhnd.daos.AccountDAO;
 import anhnd.dtos.AccountDTO;
+import anhnd.dtos.AccountErrObj;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
@@ -14,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -21,7 +23,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RegisterServlet extends HttpServlet {
 
+    private static Logger log = Logger.getLogger(RegisterServlet.class.getName());
     private static final String LOGIN_PAGE = "login.html";
+    private static final String REGISTER_PAGE = "register.jsp";
+    private static final String EMAIL_PATTERN = "^(.+)@(.+)$";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,23 +41,55 @@ public class RegisterServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        String url = "";
+        String url = REGISTER_PAGE;
         String email = request.getParameter("txtEmail");
         String name = request.getParameter("txtName");
         String password = request.getParameter("txtPassword");
+
+        AccountErrObj errObj = new AccountErrObj();
+        boolean foundErr = false;
         try {
-            AccountDTO dto = new AccountDTO(email, name, 0, 0);
-            dto.setPassword(password);
-            AccountDAO dao = new AccountDAO();
-            boolean flag = dao.insertAccount(dto);
-            if (flag == true) {
-                url = LOGIN_PAGE;
+            if (email.equals("")) {
+                foundErr = true;
+                errObj.setEmailIsEmpty("Email must be not empty");
             }
+            if (!email.matches(EMAIL_PATTERN)) {
+                foundErr = true;
+                errObj.setEmailInvalid("Email must be valid");
+            }
+            if (name.equals("")) {
+                foundErr = true;
+                errObj.setNameIsEmpty("Name must be not empty");
+            }
+            if (password.equals("")) {
+                foundErr = true;
+                errObj.setPasswordIsEmpty("Password must be not empty");
+            }
+            if (password.length() < 6 || password.length() > 15) {
+                foundErr = true;
+                errObj.setPasswordRange("Password must be in range(6 - 15) characters");
+            }
+            if (foundErr == true) {
+                request.setAttribute("ERROR", errObj);
+            } else {
+                AccountDTO dto = new AccountDTO(email, name, 0, 0);
+                dto.setPassword(password);
+                AccountDAO dao = new AccountDAO();
+                boolean flag = dao.insertAccount(dto);
+                if (flag == true) {
+                    url = LOGIN_PAGE;
+                }
+            }
+
+        } catch (Exception e) {
+            log.error("RegisterServlet_Exception: " + e.getMessage());
+            if (e.getMessage().contains("duplicate")) {
+                errObj.setEmailIsExisted("Email is existed");
+                request.setAttribute("ERROR", errObj);
+            }
+        } finally {
             RequestDispatcher dispatcher = request.getRequestDispatcher(url);
             dispatcher.forward(request, response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
             out.close();
         }
     }

@@ -1,0 +1,7 @@
+RegisterServlet_Exception: Violation of PRIMARY KEY constraint 'PK__Account__AB6E616570090092'. Cannot insert duplicate key in object 'dbo.Account'. The duplicate key value is (cuonghx@gmail.com).
+LoginServlet_Exception: null
+LoginServlet_Exception: null
+LoginServlet_Exception: null
+LoginServlet_Exception: null
+LoginServlet_Exception: null
+RegisterServlet_Exception: Violation of PRIMARY KEY constraint 'PK__Account__AB6E616570090092'. Cannot insert duplicate key in object 'dbo.Account'. The duplicate key value is (anhnd16091998@gmail.com).

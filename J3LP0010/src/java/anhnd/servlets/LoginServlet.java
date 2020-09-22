@@ -9,12 +9,17 @@ import anhnd.daos.AccountDAO;
 import anhnd.dtos.AccountDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -22,10 +27,12 @@ import javax.servlet.http.HttpSession;
  */
 public class LoginServlet extends HttpServlet {
 
-    private static final String MEMBER_PAGE = "member_home.jsp";
-     private static final String ADMIN_HOME = "admin_home.jsp";
+    private static Logger log = Logger.getLogger(LoginServlet.class.getName());
+    private static final String MEMBER_HOME = "member_home.jsp";
+    private static final String ADMIN_HOME = "admin_home.jsp";
     private static final String LOGIN_PAGE = "login.html";
     private static final String INVALID_PAGE = "invalid.html";
+    private final String ACCESS_DENIED_PAGE = "access_denied.html";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -46,37 +53,37 @@ public class LoginServlet extends HttpServlet {
         try {
             AccountDAO dao = new AccountDAO();
             AccountDTO dto = dao.checkLogin(email, password);
-            System.out.println("email: " + dto.getEmail());
             if (dto != null) {
                 if (dto.getStatus() != 2) {
                     switch (dto.getRole()) {
                         case 0: {
+                            url = MEMBER_HOME;
                             HttpSession session = request.getSession();
-                            session.setAttribute("MEMBER", dto);
-                            url = MEMBER_PAGE;
+                            session.setAttribute("ACCOUNT", dto);
                             break;
                         }
-                        
                         case 1: {
-                            HttpSession session = request.getSession();
-                            session.setAttribute("ADMIN", dto);
                             url = ADMIN_HOME;
+                            HttpSession session = request.getSession();
+                            session.setAttribute("ACCOUNT", dto);
                             break;
                         }
-                       
-                        default: {
+                        default:
                             url = INVALID_PAGE;
                             break;
-                        }
                     }
-                }else {
-                    url = LOGIN_PAGE;
+                } else {
+                    url = ACCESS_DENIED_PAGE;
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally{
-            response.sendRedirect(url);
+        } catch (NamingException ex) {
+            log.error("LoginServlet_ NamingException " + ex.getMessage());
+        } catch (SQLException ex) {
+            log.error("LoginServlet_ SQLException " + ex.getMessage());
+        } catch (NoSuchAlgorithmException ex) {
+            log.error("LoginServlet_ NoSuchAlgorithmException " + ex.getMessage());
+        } finally {
+            request.getRequestDispatcher(url).forward(request, response);
             out.close();
         }
     }

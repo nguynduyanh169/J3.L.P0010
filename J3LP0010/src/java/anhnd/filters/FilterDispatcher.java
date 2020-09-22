@@ -5,6 +5,7 @@
  */
 package anhnd.filters;
 
+import anhnd.dtos.AccountDTO;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -17,31 +18,31 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author anhnd
  */
 public class FilterDispatcher implements Filter {
-    
+
     private static final boolean debug = true;
     private static final String LOGIN_PAGE = "login.html";
-    
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
     // configured. 
     private FilterConfig filterConfig = null;
-    
+
     public FilterDispatcher() {
-    }    
-    
+    }
+
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
             log("FilterDispatcher:DoBeforeProcessing");
         }
-
         // Write code here to process the request and/or response before
         // the rest of the filter chain is invoked.
         // For example, a logging filter might log items on the request object,
@@ -62,8 +63,8 @@ public class FilterDispatcher implements Filter {
 	    log(buf.toString());
 	}
          */
-    }    
-    
+    }
+
     private void doAfterProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
@@ -101,19 +102,16 @@ public class FilterDispatcher implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
             throws IOException, ServletException {
-        
         HttpServletRequest req = (HttpServletRequest) request;
-        
+        HttpSession session = req.getSession();
         request.setCharacterEncoding("UTF-8");
         String uri = req.getRequestURI();
         String url = LOGIN_PAGE;
-        
+        AccountDTO dto = null;
         try {
             int lastIndex = uri.lastIndexOf("/");
             String resource = uri.substring(lastIndex + 1);
-
             if (resource.length() > 0) {
-
                 url = resource.substring(0, 1).toUpperCase()
                         + resource.substring(1)
                         + "Servlet";
@@ -121,16 +119,27 @@ public class FilterDispatcher implements Filter {
                         || resource.lastIndexOf(".js") > 0 || resource.lastIndexOf(".png") > 0 || resource.lastIndexOf(".jpg") > 0) {
                     url = resource;
                 }
-
             }
-
+            dto = (AccountDTO) session.getAttribute("ACCOUNT");
+            if (dto != null) {
+                if (uri.contains("admin")) {
+                    if (dto.getRole() != 1) {
+                        url = LOGIN_PAGE;
+                    }
+                } else if (uri.contains("member")) {
+                    if (dto.getRole() != 0) {
+                        url = LOGIN_PAGE;
+                    }
+                }
+            } else {
+                if (uri.contains("admin") || uri.contains("member")) {
+                    url = LOGIN_PAGE;
+                }
+            }
             if (url != null) {
-
                 RequestDispatcher rd = req.getRequestDispatcher(url);
                 rd.forward(request, response);
-
             } else {
-
                 chain.doFilter(request, response);
             }
         } catch (Exception e) {
@@ -157,16 +166,16 @@ public class FilterDispatcher implements Filter {
     /**
      * Destroy method for this filter
      */
-    public void destroy() {        
+    public void destroy() {
     }
 
     /**
      * Init method for this filter
      */
-    public void init(FilterConfig filterConfig) {        
+    public void init(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
         if (filterConfig != null) {
-            if (debug) {                
+            if (debug) {
                 log("FilterDispatcher:Initializing filter");
             }
         }
@@ -185,20 +194,20 @@ public class FilterDispatcher implements Filter {
         sb.append(")");
         return (sb.toString());
     }
-    
+
     private void sendProcessingError(Throwable t, ServletResponse response) {
-        String stackTrace = getStackTrace(t);        
-        
+        String stackTrace = getStackTrace(t);
+
         if (stackTrace != null && !stackTrace.equals("")) {
             try {
                 response.setContentType("text/html");
                 PrintStream ps = new PrintStream(response.getOutputStream());
-                PrintWriter pw = new PrintWriter(ps);                
+                PrintWriter pw = new PrintWriter(ps);
                 pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
 
                 // PENDING! Localize this for next official release
-                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");                
-                pw.print(stackTrace);                
+                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");
+                pw.print(stackTrace);
                 pw.print("</pre></body>\n</html>"); //NOI18N
                 pw.close();
                 ps.close();
@@ -215,7 +224,7 @@ public class FilterDispatcher implements Filter {
             }
         }
     }
-    
+
     public static String getStackTrace(Throwable t) {
         String stackTrace = null;
         try {
@@ -229,9 +238,9 @@ public class FilterDispatcher implements Filter {
         }
         return stackTrace;
     }
-    
+
     public void log(String msg) {
-        filterConfig.getServletContext().log(msg);        
+        filterConfig.getServletContext().log(msg);
     }
-    
+
 }

@@ -5,9 +5,11 @@
  */
 package anhnd.servlets;
 
-import anhnd.dtos.AccountDTO;
+import anhnd.daos.ArticleDAO;
+import anhnd.dtos.ArticleDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,10 +20,8 @@ import javax.servlet.http.HttpSession;
  *
  * @author anhnd
  */
-public class LogoutServlet extends HttpServlet {
-
-    private static final String LOGIN_PAGE = "login.html";
-
+public class SearchServlet extends HttpServlet {
+    private static final String MEMBER_HOME = "member_home.jsp";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -35,15 +35,28 @@ public class LogoutServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        HttpSession session = request.getSession(false);
-        String url = LOGIN_PAGE;
+        String spageId = request.getParameter("page");
+        String search = request.getParameter("search");
+        if(spageId == null){
+            spageId = "1";
+        }
         try {
-            if (session != null) {
-                session.invalidate();
+            int pageId = Integer.parseInt(spageId);
+            int total = 2;
+            if (pageId == 1) {
+                
+            } else {
+                pageId = pageId - 1;
+                pageId = pageId * total + 1;
             }
-
-        } finally {
-            response.sendRedirect(url);
+            ArticleDAO dao = new ArticleDAO();
+            List<ArticleDTO> result = dao.searchArticleByDescription(search, pageId, total);
+            HttpSession session = request.getSession();
+            session.setAttribute("ARTICLES", result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+            response.sendRedirect(MEMBER_HOME);
             out.close();
         }
     }
