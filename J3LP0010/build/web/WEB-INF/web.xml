@@ -28,6 +28,14 @@
         <servlet-name>SearchServlet</servlet-name>
         <servlet-class>anhnd.servlets.SearchServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AddNewArticleServlet</servlet-name>
+        <servlet-class>anhnd.servlets.AddNewArticleServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateArticleServlet</servlet-name>
+        <servlet-class>anhnd.servlets.CreateArticleServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ProcessServlet</servlet-name>
         <url-pattern>/ProcessServlet</url-pattern>
@@ -47,6 +55,14 @@
     <servlet-mapping>
         <servlet-name>SearchServlet</servlet-name>
         <url-pattern>/SearchServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddNewArticleServlet</servlet-name>
+        <url-pattern>/AddNewArticleServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateArticleServlet</servlet-name>
+        <url-pattern>/CreateArticleServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

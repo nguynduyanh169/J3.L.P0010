@@ -21,11 +21,10 @@ public class ArticleDTO implements Serializable{
     private String createBy;
     private int status;
 
-    public ArticleDTO(String title, String description, String imagePath, Date createdDate, String createBy, int status) {
+    public ArticleDTO(String title, String description, String imagePath, String createBy, int status) {
         this.title = title;
         this.description = description;
         this.imagePath = imagePath;
-        this.createdDate = createdDate;
         this.createBy = createBy;
         this.status = status;
     }
@@ -89,6 +88,11 @@ public class ArticleDTO implements Serializable{
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "ArticleDTO{" + "title=" + title + ", description=" + description + ", imagePath=" + imagePath + ", createdDate=" + createdDate + '}';
     }
     
     
