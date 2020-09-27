@@ -30,6 +30,7 @@ public class EmotionServlet extends HttpServlet {
 
     private static Logger log = Logger.getLogger(EmotionServlet.class.getName());
     private static final String MEMBER_HOME = "member_home.jsp";
+    private static final String ERROR = "errorpage.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -46,7 +47,7 @@ public class EmotionServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         String emotionType = request.getParameter("emotionType");
         String articleId = request.getParameter("articleId");
-        String url = "";
+        String url = ERROR;
         try {
             EmotionDAO emotionDAO = new EmotionDAO();
             HttpSession session = request.getSession();

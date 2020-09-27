@@ -35,7 +35,7 @@ public class SeePostDetailServlet extends HttpServlet {
     private static Logger log = Logger.getLogger(SeePostDetailServlet.class.getName());
     public static final String MEMBER_DETAIL_POST = "member_detail_post.jsp";
     public static final String ADMIN_DETAIL_POST = "admin_detail_post.jsp";
-
+    private static final String ERROR = "errorpage.jsp";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -51,7 +51,7 @@ public class SeePostDetailServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         String articleId = request.getParameter("articleId");
         String notificationId = "";
-        String url = "";
+        String url = ERROR;
         try {
             notificationId = request.getParameter("notificationId");
             NotificationDAO notificationDAO = new NotificationDAO();

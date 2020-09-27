@@ -26,6 +26,7 @@ public class BackToHomeServlet extends HttpServlet {
 
     private static final String MEMBER_HOME = "member_home.jsp";
     private static final String ADMIN_HOME = "admin_home.jsp";
+    private static final String ERROR = "errorpage.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,7 +41,7 @@ public class BackToHomeServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        String url = "";
+        String url = ERROR;
         try {
             HttpSession session = request.getSession();
             AccountDTO dto = (AccountDTO) session.getAttribute("ACCOUNT");

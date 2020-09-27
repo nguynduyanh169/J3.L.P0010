@@ -28,6 +28,7 @@ public class CommentServlet extends HttpServlet {
 
     private static Logger log = Logger.getLogger(CommentServlet.class.getName());
     public static final String MEMBER_HOME = "member_home.jsp";
+    private static final String ERROR = "errorpage.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -45,7 +46,7 @@ public class CommentServlet extends HttpServlet {
         String content = request.getParameter("txtComment");
         String articleId = request.getParameter("articleId");
         String email = request.getParameter("email");
-        String url = "";
+        String url = ERROR;
         try {
             CommentDAO dao = new CommentDAO();
             CommentDTO dto = new CommentDTO();

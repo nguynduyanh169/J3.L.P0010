@@ -33,6 +33,7 @@ public class LoginServlet extends HttpServlet {
     private static final String LOGIN_PAGE = "login.html";
     private static final String INVALID_PAGE = "invalid.html";
     private final String ACCESS_DENIED_PAGE = "access_denied.html";
+    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
