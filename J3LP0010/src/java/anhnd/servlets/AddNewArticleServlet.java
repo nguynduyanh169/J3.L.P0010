@@ -8,12 +8,16 @@ package anhnd.servlets;
 import anhnd.dtos.AccountDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -21,7 +25,8 @@ import javax.servlet.http.HttpSession;
  */
 public class AddNewArticleServlet extends HttpServlet {
 
-    public static final String CREATE_ARTICLE_PAGE = "member_create_article.jsp";
+    private static Logger log = Logger.getLogger(AddNewArticleServlet.class.getName());
+    public static final String MEMBER_CREATE_ARTICLE_PAGE = "member_create_article.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,9 +46,9 @@ public class AddNewArticleServlet extends HttpServlet {
             AccountDTO dto = (AccountDTO) session.getAttribute("ACCOUNT");
             session.setAttribute("ACCOUNT", dto);
         } catch (Exception e) {
-            e.printStackTrace();
-        } finally{
-            RequestDispatcher rd = request.getRequestDispatcher(CREATE_ARTICLE_PAGE);
+            log.error("AddNewArticleServlet_Exception " + e.getMessage());
+        } finally {
+            RequestDispatcher rd = request.getRequestDispatcher(MEMBER_CREATE_ARTICLE_PAGE);
             rd.forward(request, response);
             out.close();
         }

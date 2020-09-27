@@ -6,11 +6,14 @@
 package anhnd.servlets;
 
 import anhnd.daos.ArticleDAO;
-import anhnd.dtos.ArticleDTO;
+import anhnd.daos.NotificationDAO;
+import anhnd.dtos.AccountDTO;
+import anhnd.dtos.NotificationDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
@@ -25,11 +28,10 @@ import org.apache.log4j.Logger;
  *
  * @author anhnd
  */
-public class SearchServlet extends HttpServlet {
+public class SeeNotificationServlet extends HttpServlet {
 
-    private static Logger log = Logger.getLogger(SearchServlet.class.getName());
-    private static final String MEMBER_HOME = "member_home.jsp";
-    private static final String ADMIN_HOME = "admin_home.jsp";
+    private static Logger log = Logger.getLogger(SeeNotificationServlet.class.getName());
+    private static final String MEMBER_NOTIFICATION = "member_notification.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,41 +46,28 @@ public class SearchServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        String search = request.getParameter("search");
-        int pageIndex = 1;
-        if (request.getParameter("page") != null) {
-            pageIndex = Integer.parseInt(request.getParameter("page"));
-        }
-        int pageSize = 5;
-        int endPage = 0;
-        String url = request.getParameter("urlForward");
-        if (url.equals("Search_Member")) {
-            url = MEMBER_HOME;
-        } else if (url.equals("Search_Admin")) {
-            url = ADMIN_HOME;
-        }
-
         try {
-            ArticleDAO dao = new ArticleDAO();
-            int countArticle = dao.countArticleByDescription(search);
-            endPage = countArticle / pageSize;
-            if (countArticle % pageSize != 0) {
-                endPage++;
-            }
-            List<ArticleDTO> articles = dao.searchArticleByDescription(search, pageIndex, pageSize);
             HttpSession session = request.getSession();
-            session.setAttribute("ARTICLES", articles);
-            session.setAttribute("TOTALPAGE", endPage);
+            AccountDTO account = (AccountDTO) session.getAttribute("ACCOUNT");
+            String email = account.getEmail();
+            ArticleDAO articleDAO = new ArticleDAO();
+            NotificationDAO notificationDAO = new NotificationDAO();
+            List<Integer> articleIds = articleDAO.getArticleIdsByEmail(email);
+            HashMap<Integer, ArrayList<NotificationDTO>> results = new HashMap<>();
+            for (Integer articleId : articleIds) {
+                ArrayList<NotificationDTO> notificationDTOs = (ArrayList<NotificationDTO>) notificationDAO.getNotificationByArticle(articleId);
+                results.put(articleId, notificationDTOs);
+            }
+            request.setAttribute("NOTIFICATIONS", results);
         } catch (NamingException ex) {
-            log.error("SearchServlet_ NamingException " + ex.getMessage());
+            log.error("SeeNotificationServlet_ NamingException " + ex.getMessage());
         } catch (SQLException ex) {
-            log.error("SearchServlet_ SQLException " + ex.getMessage());
+            log.error("SeeNotificationServlet_ SQLException " + ex.getMessage());
         } finally {
-            RequestDispatcher rd = request.getRequestDispatcher(url);
+            RequestDispatcher rd = request.getRequestDispatcher(MEMBER_NOTIFICATION);
             rd.forward(request, response);
             out.close();
         }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

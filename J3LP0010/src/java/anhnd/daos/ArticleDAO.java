@@ -35,7 +35,7 @@ public class ArticleDAO implements Serializable {
         try {
             connection = DBUtils.makeConnection();
             if (connection != null) {
-                String sql = "Select title, description, image, createDate from Article Where description like N'%"+ search + "%' order by createDate desc "
+                String sql = "Select articleId, title, description, image, createBy, createDate from Article Where description like N'%"+ search + "%' and status = 0 order by createDate desc "
                         + "offset ? rows fetch next ? rows only";
                 preparedStatement = connection.prepareStatement(sql);
                 preparedStatement.setInt(1, pageIndex);
@@ -43,20 +43,21 @@ public class ArticleDAO implements Serializable {
                 resultSet = preparedStatement.executeQuery();
                 result = new ArrayList<>();
                 while (resultSet.next()) {
+                    int articleId = resultSet.getInt("articleId");
                     String title = resultSet.getString("title");
                     String description = resultSet.getString("description");
                     String imagePath = resultSet.getString("image");
                     Date createDate = resultSet.getDate("createDate");
+                    String createBy = resultSet.getString("createBy");
                     dto = new ArticleDTO();
+                    dto.setArticleId(articleId);
                     dto.setTitle(title);
                     dto.setDescription(description);
                     dto.setCreatedDate(createDate);
                     dto.setImagePath(imagePath);
+                    dto.setCreateBy(createBy);
                     result.add(dto);
                 }
-            }
-            for (ArticleDTO articleDTO : result) {
-                System.out.println(articleDTO.toString());
             }
         } finally {
             if (preparedStatement != null) {
@@ -80,12 +81,50 @@ public class ArticleDAO implements Serializable {
         try {
             connection = DBUtils.makeConnection();
             if (connection != null) {
-                String sql = "select count(articleId) from Article where description like ?";
+                String sql = "select count(articleId) from Article where description like N'%"+ search + "%'";
                 preparedStatement = connection.prepareStatement(sql);
-                preparedStatement.setString(1, "%" + search + "%");
                 resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {
                     result = resultSet.getInt(1);
+                }
+            }
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        }
+        return result;
+    }
+    
+    public ArticleDTO getArticleById(int id) throws NamingException, SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArticleDTO result = null;
+        try {
+            connection = DBUtils.makeConnection();
+            if (connection != null) {
+                String sql = "Select title, description, image, createDate from Article Where articleId = ?";
+                preparedStatement = connection.prepareStatement(sql);
+                preparedStatement.setInt(1, id);
+                resultSet = preparedStatement.executeQuery();
+                result = new ArticleDTO();
+                if (resultSet.next()) {
+                    String title = resultSet.getString("title");
+                    String description = resultSet.getString("description");
+                    String imagePath = resultSet.getString("image");
+                    Date createDate = resultSet.getDate("createDate");
+                    result.setArticleId(id);
+                    result.setTitle(title);
+                    result.setDescription(description);
+                    result.setImagePath(imagePath);
+                    result.setCreatedDate(createDate);
                 }
             }
         } finally {
@@ -116,6 +155,65 @@ public class ArticleDAO implements Serializable {
                 preparedStatement.setString(3, dto.getImagePath());
                 preparedStatement.setString(4, dto.getCreateBy());
                 preparedStatement.setInt(5, dto.getStatus());
+                int row = preparedStatement.executeUpdate();
+                if (row > 0) {
+                    check = true;
+                }
+            }
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+
+        return check;
+    }
+    
+    public List<Integer> getArticleIdsByEmail(String email) throws NamingException, SQLException{
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<Integer> result = null;
+        try {
+            connection = DBUtils.makeConnection();
+            if (connection != null) {
+                String sql = "Select articleId from Article where createBy = ?";
+                preparedStatement = connection.prepareStatement(sql);
+                preparedStatement.setString(1, email);
+                resultSet = preparedStatement.executeQuery();
+                result = new ArrayList<>();
+                while (resultSet.next()) {
+                    int articleId = resultSet.getInt("articleId");
+                    result.add(articleId);
+                }
+            }
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        }
+        return result;
+    }
+    
+    public boolean deleteArticle(int id) throws NamingException, SQLException{
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        boolean check = false;
+        try {
+            connection = DBUtils.makeConnection();
+            if (connection != null) {
+                String sql = "Update Article set status = 1 where articleId = ?";
+                preparedStatement = connection.prepareStatement(sql);
+                preparedStatement.setInt(1, id);
                 int row = preparedStatement.executeUpdate();
                 if (row > 0) {
                     check = true;

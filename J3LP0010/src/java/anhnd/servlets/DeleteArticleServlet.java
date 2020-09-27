@@ -6,28 +6,22 @@
 package anhnd.servlets;
 
 import anhnd.daos.ArticleDAO;
-import anhnd.dtos.ArticleDTO;
+import anhnd.dtos.AccountDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
-import java.util.List;
-import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.log4j.Logger;
 
 /**
  *
  * @author anhnd
  */
-public class SearchServlet extends HttpServlet {
+public class DeleteArticleServlet extends HttpServlet {
 
-    private static Logger log = Logger.getLogger(SearchServlet.class.getName());
     private static final String MEMBER_HOME = "member_home.jsp";
     private static final String ADMIN_HOME = "admin_home.jsp";
 
@@ -44,41 +38,29 @@ public class SearchServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        String search = request.getParameter("search");
-        int pageIndex = 1;
-        if (request.getParameter("page") != null) {
-            pageIndex = Integer.parseInt(request.getParameter("page"));
-        }
-        int pageSize = 5;
-        int endPage = 0;
-        String url = request.getParameter("urlForward");
-        if (url.equals("Search_Member")) {
-            url = MEMBER_HOME;
-        } else if (url.equals("Search_Admin")) {
-            url = ADMIN_HOME;
-        }
-
+        String articleId = request.getParameter("articleId");
+        String url = "";
         try {
-            ArticleDAO dao = new ArticleDAO();
-            int countArticle = dao.countArticleByDescription(search);
-            endPage = countArticle / pageSize;
-            if (countArticle % pageSize != 0) {
-                endPage++;
-            }
-            List<ArticleDTO> articles = dao.searchArticleByDescription(search, pageIndex, pageSize);
             HttpSession session = request.getSession();
-            session.setAttribute("ARTICLES", articles);
-            session.setAttribute("TOTALPAGE", endPage);
-        } catch (NamingException ex) {
-            log.error("SearchServlet_ NamingException " + ex.getMessage());
-        } catch (SQLException ex) {
-            log.error("SearchServlet_ SQLException " + ex.getMessage());
+            AccountDTO accountDTO = (AccountDTO) session.getAttribute("ACCOUNT");
+            int role = accountDTO.getRole();
+            ArticleDAO dao = new ArticleDAO();
+            boolean check = dao.deleteArticle(Integer.parseInt(articleId));
+            if (check == true) {
+                if (role == 0) {
+                    url = MEMBER_HOME;
+                }
+                if (role == 1) {
+                    url = ADMIN_HOME;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);
             out.close();
         }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -6,10 +6,15 @@
 package anhnd.servlets;
 
 import anhnd.daos.ArticleDAO;
+import anhnd.daos.CommentDAO;
+import anhnd.daos.EmotionDAO;
+import anhnd.daos.NotificationDAO;
+import anhnd.dtos.AccountDTO;
 import anhnd.dtos.ArticleDTO;
+import anhnd.dtos.CommentDTO;
+import anhnd.dtos.EmotionDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.List;
 import javax.naming.NamingException;
@@ -25,11 +30,11 @@ import org.apache.log4j.Logger;
  *
  * @author anhnd
  */
-public class SearchServlet extends HttpServlet {
+public class SeePostDetailServlet extends HttpServlet {
 
-    private static Logger log = Logger.getLogger(SearchServlet.class.getName());
-    private static final String MEMBER_HOME = "member_home.jsp";
-    private static final String ADMIN_HOME = "admin_home.jsp";
+    private static Logger log = Logger.getLogger(SeePostDetailServlet.class.getName());
+    public static final String MEMBER_DETAIL_POST = "member_detail_post.jsp";
+    public static final String ADMIN_DETAIL_POST = "admin_detail_post.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,41 +49,48 @@ public class SearchServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        String search = request.getParameter("search");
-        int pageIndex = 1;
-        if (request.getParameter("page") != null) {
-            pageIndex = Integer.parseInt(request.getParameter("page"));
-        }
-        int pageSize = 5;
-        int endPage = 0;
-        String url = request.getParameter("urlForward");
-        if (url.equals("Search_Member")) {
-            url = MEMBER_HOME;
-        } else if (url.equals("Search_Admin")) {
-            url = ADMIN_HOME;
-        }
-
+        String articleId = request.getParameter("articleId");
+        String notificationId = "";
+        String url = "";
         try {
-            ArticleDAO dao = new ArticleDAO();
-            int countArticle = dao.countArticleByDescription(search);
-            endPage = countArticle / pageSize;
-            if (countArticle % pageSize != 0) {
-                endPage++;
+            notificationId = request.getParameter("notificationId");
+            NotificationDAO notificationDAO = new NotificationDAO();
+            if (notificationId.equals("") == false) {
+                notificationDAO.changeStatus(Integer.parseInt(notificationId));
             }
-            List<ArticleDTO> articles = dao.searchArticleByDescription(search, pageIndex, pageSize);
+            EmotionDAO emotionDao = new EmotionDAO();
+            ArticleDAO articleDAO = new ArticleDAO();
+            CommentDAO commentDAO = new CommentDAO();
             HttpSession session = request.getSession();
-            session.setAttribute("ARTICLES", articles);
-            session.setAttribute("TOTALPAGE", endPage);
+            AccountDTO dto = (AccountDTO) session.getAttribute("ACCOUNT");
+            String email = dto.getEmail();
+            int numberOfLike = emotionDao.countLikeByArticleId(Integer.parseInt(articleId));
+            int numberOfDislike = emotionDao.countDislikeByArticleId(Integer.parseInt(articleId));
+            ArticleDTO articleDTO = articleDAO.getArticleById(Integer.parseInt(articleId));
+            List<CommentDTO> comments = commentDAO.getCommentsByArticleId(Integer.parseInt(articleId));
+            EmotionDTO emotionDTO = emotionDao.getEmotionByArticleIdAndEmail(email, Integer.parseInt(articleId));
+            if (emotionDTO != null) {
+                request.setAttribute("EMOTIONOFUSER", emotionDTO);
+            }
+            request.setAttribute("ARTICLE", articleDTO);
+            request.setAttribute("LIKES", numberOfLike);
+            request.setAttribute("DISLIKES", numberOfDislike);
+            request.setAttribute("COMMENTS", comments);
+            if (dto.getRole() == 0) {
+                url = MEMBER_DETAIL_POST;
+            }
+            if (dto.getRole() == 1) {
+                url = ADMIN_DETAIL_POST;
+            }
         } catch (NamingException ex) {
-            log.error("SearchServlet_ NamingException " + ex.getMessage());
+            log.error("SeeNotificationServlet_ NamingException " + ex.getMessage());
         } catch (SQLException ex) {
-            log.error("SearchServlet_ SQLException " + ex.getMessage());
+            log.error("SeeNotificationServlet_ SQLException " + ex.getMessage());
         } finally {
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);
             out.close();
         }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

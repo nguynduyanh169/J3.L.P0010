@@ -12,8 +12,9 @@ import java.util.Date;
  *
  * @author anhnd
  */
-public class ArticleDTO implements Serializable{
-    private String articleId;
+public class ArticleDTO implements Serializable {
+
+    private int articleId;
     private String title;
     private String description;
     private String imagePath;
@@ -31,14 +32,12 @@ public class ArticleDTO implements Serializable{
 
     public ArticleDTO() {
     }
-    
-    
 
-    public String getArticleId() {
+    public int getArticleId() {
         return articleId;
     }
 
-    public void setArticleId(String articleId) {
+    public void setArticleId(int articleId) {
         this.articleId = articleId;
     }
 
@@ -94,6 +93,5 @@ public class ArticleDTO implements Serializable{
     public String toString() {
         return "ArticleDTO{" + "title=" + title + ", description=" + description + ", imagePath=" + imagePath + ", createdDate=" + createdDate + '}';
     }
-    
-    
+
 }

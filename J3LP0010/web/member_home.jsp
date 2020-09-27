@@ -19,11 +19,17 @@
                 align-items: center;
             }
         </style>
+        <script>
+            function confirmBtn() {
+                confirm("Press a button!");
+            }
+        </script>
     </head>
     <body>
         <div class="container">
             <c:set var="articles" value="${sessionScope.ARTICLES}"/>
             <c:set var="totalpage" value="${sessionScope.TOTALPAGE}"/>
+            <c:set var="email" value="${sessionScope.ACCOUNT.email}"/>
             <h1 style=" display: flex;justify-content: center;margin-bottom: 50px">Welcome <c:out value="${sessionScope.ACCOUNT.name}"/></h1> <br><br>
             <form action="logout" method="POST">
                 <input type="submit" value="Logout" name="btAction"/>
@@ -38,6 +44,9 @@
             <c:url var="createArticleLink" value="addNewArticle"/>
             <a style="margin:5px" href="${createArticleLink}">Create New Article</a>
             <br/>
+            <c:url var="seeNotiLink" value="seeNotification"/>
+            <a style="margin:5px" href="${seeNotiLink}">See notifications</a>
+            <br/>
             <c:if test="${not empty articles}">
                 <table border="1">
                     <thead>
@@ -46,6 +55,8 @@
                             <th>Description</th>
                             <th>Image</th>
                             <th>Date</th>
+                            <th>View Details</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                     <c:forEach var="dto" items="${articles}" varStatus="counter">
@@ -62,6 +73,20 @@
                                     </c:if></td>
 
                                 <td>${dto.createdDate}</td>
+                                <c:url var="viewArticleDetailLink" value="seePostDetail">
+                                    <c:param name="articleId" value="${dto.articleId}"/>
+                                    <c:param name="notificationId" value=""/>
+                                </c:url>
+                                <td><a href="${viewArticleDetailLink}">Details</a></td>
+                                <c:set var="createBy" value="${dto.createBy}"/>
+                                <c:if test="${createBy == email}">
+                                    <td>
+                                        <form action="deleteArticle" method="POST">
+                                            <input type="hidden" name="articleId" value="${dto.articleId}"/>
+                                            <input onclick="confirmBtn()" type="submit" name="btAction" value="Delete"/>
+                                        </form>
+                                    </td>
+                                </c:if>
                             </c:forEach>
                         </tr>
                     </tbody>
@@ -70,7 +95,7 @@
             <c:if test="${empty articles}">
                 <h1>No record is matched !!!</h1>
             </c:if>
-                <div>
+            <div>
                 <c:forEach begin="1" end="${totalpage}" var="i">
                     <c:url var="currentPageLink" value="search">
                         <c:param name="page" value="${i}"/>

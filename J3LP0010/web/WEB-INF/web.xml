@@ -36,6 +36,30 @@
         <servlet-name>CreateArticleServlet</servlet-name>
         <servlet-class>anhnd.servlets.CreateArticleServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SeePostDetailServlet</servlet-name>
+        <servlet-class>anhnd.servlets.SeePostDetailServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CommentServlet</servlet-name>
+        <servlet-class>anhnd.servlets.CommentServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EmotionServlet</servlet-name>
+        <servlet-class>anhnd.servlets.EmotionServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SeeNotificationServlet</servlet-name>
+        <servlet-class>anhnd.servlets.SeeNotificationServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>BackToHomeServlet</servlet-name>
+        <servlet-class>anhnd.servlets.BackToHomeServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteArticleServlet</servlet-name>
+        <servlet-class>anhnd.servlets.DeleteArticleServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ProcessServlet</servlet-name>
         <url-pattern>/ProcessServlet</url-pattern>
@@ -63,6 +87,30 @@
     <servlet-mapping>
         <servlet-name>CreateArticleServlet</servlet-name>
         <url-pattern>/CreateArticleServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SeePostDetailServlet</servlet-name>
+        <url-pattern>/SeePostDetailServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CommentServlet</servlet-name>
+        <url-pattern>/CommentServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EmotionServlet</servlet-name>
+        <url-pattern>/EmotionServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SeeNotificationServlet</servlet-name>
+        <url-pattern>/SeeNotificationServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BackToHomeServlet</servlet-name>
+        <url-pattern>/BackToHomeServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteArticleServlet</servlet-name>
+        <url-pattern>/DeleteArticleServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
