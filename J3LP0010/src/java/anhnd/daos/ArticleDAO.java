@@ -81,7 +81,7 @@ public class ArticleDAO implements Serializable {
         try {
             connection = DBUtils.makeConnection();
             if (connection != null) {
-                String sql = "select count(articleId) from Article where description like N'%"+ search + "%'";
+                String sql = "select count(articleId) from Article where description like N'%"+ search + "%' and status = 0";
                 preparedStatement = connection.prepareStatement(sql);
                 resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {

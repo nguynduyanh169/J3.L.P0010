@@ -8,3 +8,4 @@ RegisterServlet_Exception: Violation of PRIMARY KEY constraint 'PK__Account__AB6
 SearchServlet_ SQLException Invalid column name 'N@P0'.
 SearchServlet_ SQLException Incorrect syntax near the keyword 'like'.
 RegisterServlet_Exception: null
+RegisterServlet_Exception: Violation of PRIMARY KEY constraint 'PK__Account__AB6E616570090092'. Cannot insert duplicate key in object 'dbo.Account'. The duplicate key value is (cuonghx@gmail.com).

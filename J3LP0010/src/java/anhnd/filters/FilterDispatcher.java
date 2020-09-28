@@ -19,6 +19,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpSession;
  */
 public class FilterDispatcher implements Filter {
 
+    private static Logger log = Logger.getLogger(FilterDispatcher.class.getName());
     private static final boolean debug = true;
     private static final String LOGIN_PAGE = "login.html";
 
@@ -142,7 +144,7 @@ public class FilterDispatcher implements Filter {
                 chain.doFilter(request, response);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("FilterDispactcher_Exception " + e.getMessage());
         }
     }
 

@@ -19,11 +19,7 @@
                 align-items: center;
             }
         </style>
-        <script>
-            function confirmBtn() {
-                confirm("Press a button!");
-            }
-        </script>
+        
     </head>
     <body>
         <div class="container">
@@ -81,9 +77,9 @@
                                 <c:set var="createBy" value="${dto.createBy}"/>
                                 <c:if test="${createBy == email}">
                                     <td>
-                                        <form action="deleteArticle" method="POST">
+                                        <form action="confirmDelete" method="POST">
                                             <input type="hidden" name="articleId" value="${dto.articleId}"/>
-                                            <input onclick="confirmBtn()" type="submit" name="btAction" value="Delete"/>
+                                            <input type="submit" name="btAction" value="Remove"/>
                                         </form>
                                     </td>
                                 </c:if>

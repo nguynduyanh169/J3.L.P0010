@@ -60,6 +60,10 @@
         <servlet-name>DeleteArticleServlet</servlet-name>
         <servlet-class>anhnd.servlets.DeleteArticleServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ConfirmDeleteServlet</servlet-name>
+        <servlet-class>anhnd.servlets.ConfirmDeleteServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ProcessServlet</servlet-name>
         <url-pattern>/ProcessServlet</url-pattern>
@@ -111,6 +115,10 @@
     <servlet-mapping>
         <servlet-name>DeleteArticleServlet</servlet-name>
         <url-pattern>/DeleteArticleServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ConfirmDeleteServlet</servlet-name>
+        <url-pattern>/ConfirmDeleteServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

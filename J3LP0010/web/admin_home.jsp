@@ -19,11 +19,6 @@
                 align-items: center;
             }
         </style>
-        <script>
-            function confirmBtn() {
-                confirm("Press a button!");
-            }
-        </script>
     </head>
     <body>
         <div class="container">
@@ -73,9 +68,9 @@
                                 </c:url>
                                 <td><a href="${viewArticleDetailLink}">Details</a></td>
                                 <td>
-                                    <form action="deleteArticle" method="POST">
+                                    <form action="confirmDelete" method="POST">
                                         <input type="hidden" name="articleId" value="${dto.articleId}"/>
-                                        <input onclick="confirmBtn()" type="submit" name="btAction" value="Delete"/>
+                                        <input type="submit" name="btAction" value="Delete"/>
                                     </form>
                                 </td>
                             </c:forEach>
@@ -91,7 +86,7 @@
                     <c:url var="currentPageLink" value="search">
                         <c:param name="page" value="${i}"/>
                         <c:param name="search" value="${param.search}"/>
-                        <c:param name="urlForward" value="Search_Member"/>
+                        <c:param name="urlForward" value="Search_Admin"/>
                     </c:url>
                     <a id="${i}" style="margin-bottom: 50px" href="${currentPageLink}">${i}</a>
                 </c:forEach>
