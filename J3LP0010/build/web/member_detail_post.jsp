@@ -115,7 +115,7 @@
             </c:if>
             <br/>
             <form action="comment" method="POST">
-                <input type="text" name="txtComment" value="" />
+                <input type="text" name="txtComment" value="" required/>
                 <input type="hidden" name="articleId" value="${article.articleId}"/>
                 <input type="hidden" name="email" value="${sessionScope.ACCOUNT.email}"/>
                 <input type="submit" name="btAction" value="Comment"/>
